@@ -1,10 +1,14 @@
 import {
 	PrimaryGeneratedColumn,
 	CreateDateColumn,
+	DeleteDateColumn,
 	UpdateDateColumn,
+	ManyToMany,
 	Column,
 	Entity
 } from 'typeorm'
+
+import { Item } from '../Items/item.entity'
 
 @Entity('categories')
 export class Category {
@@ -22,4 +26,11 @@ export class Category {
 
 	@UpdateDateColumn()
 	updatedAt: string
+
+	@DeleteDateColumn({ nullable: true })
+	deletedAt?: Date
+
+	// Relations
+	@ManyToMany(() => Item, item => item.categories)
+	items: Item[]
 }

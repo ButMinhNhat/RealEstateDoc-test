@@ -1,10 +1,10 @@
-import { APP_FILTER, APP_GUARD, APP_PIPE } from '@nestjs/core'
-import { Module, ValidationPipe } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
+import { APP_GUARD } from '@nestjs/core'
+import { Module } from '@nestjs/common'
 
 import { CategoryModule, ItemModule, UserModule } from './modules'
-import { CustomExceptionFilter, AuthGuard } from 'libs'
 import { DatabaseConnection } from 'libs'
+import { AuthGuard } from 'libs'
 
 @Module({
 	imports: [
@@ -17,10 +17,6 @@ import { DatabaseConnection } from 'libs'
 		ItemModule,
 		CategoryModule
 	],
-	providers: [
-		{ provide: APP_GUARD, useClass: AuthGuard },
-		{ provide: APP_PIPE, useClass: ValidationPipe },
-		{ provide: APP_FILTER, useClass: CustomExceptionFilter }
-	]
+	providers: [{ provide: APP_GUARD, useClass: AuthGuard }]
 })
 export class AppModule {}

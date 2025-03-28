@@ -1,6 +1,27 @@
 import { IsNotEmpty, Length, Matches } from 'class-validator'
 import { ApiProperty } from '@nestjs/swagger'
+import { Expose } from 'class-transformer'
 
+// Response
+export class AuthResDto {
+	@ApiProperty()
+	@Expose()
+	id: string
+
+	@ApiProperty()
+	@Expose()
+	username: string
+
+	@ApiProperty()
+	@Expose()
+	accessToken: string
+
+	@ApiProperty()
+	@Expose()
+	refreshToken: string
+}
+
+// Request
 export class AuthReqDto {
 	@ApiProperty()
 	@IsNotEmpty()
@@ -13,28 +34,4 @@ export class AuthReqDto {
 	@Length(4, 50)
 	@Matches(/^\S+$/, { message: `'Password' cannot contain spaces!` })
 	password: string
-}
-
-export class AuthResDto {
-	@ApiProperty()
-	id: string
-
-	@ApiProperty()
-	username: string
-
-	@ApiProperty()
-	createdAt: string
-
-	@ApiProperty()
-	updatedAt: string
-
-	@ApiProperty()
-	accessToken: string
-
-	@ApiProperty()
-	refreshToken: string
-
-	constructor(partial: Partial<AuthResDto>) {
-		Object.assign(this, partial)
-	}
 }

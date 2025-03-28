@@ -1,10 +1,15 @@
 import {
 	PrimaryGeneratedColumn,
 	CreateDateColumn,
+	DeleteDateColumn,
 	UpdateDateColumn,
+	ManyToMany,
+	JoinTable,
 	Column,
 	Entity
 } from 'typeorm'
+
+import { Category } from '../Categories/category.entity'
 
 enum ItemType {
 	NEW = 'NEW',
@@ -39,4 +44,12 @@ export class Item {
 
 	@UpdateDateColumn()
 	updatedAt: string
+
+	@DeleteDateColumn({ nullable: true })
+	deletedAt?: Date
+
+	// Relations
+	@ManyToMany(() => Category, category => category.items)
+	@JoinTable()
+	categories: Category[]
 }
