@@ -4,20 +4,16 @@ import {
 	DeleteDateColumn,
 	UpdateDateColumn,
 	ManyToMany,
+	JoinColumn,
 	JoinTable,
+	ManyToOne,
 	Column,
 	Entity
 } from 'typeorm'
 
 import { Category } from '../Categories/category.entity'
-
-enum ItemType {
-	NEW = 'NEW',
-	USED = 'USED',
-	REFURBISHED = 'REFURBISHED',
-	LIMITED = 'LIMITED',
-	DIGITAL = 'DIGITAL'
-}
+import { User } from '../Users/user.entity'
+import { ItemType } from 'libs'
 
 @Entity('items')
 export class Item {
@@ -30,14 +26,17 @@ export class Item {
 	@Column()
 	name: string
 
-	@Column({ enum: ItemType, default: ItemType.NEW })
+	@Column({ enum: ItemType })
 	type: string
 
-	@Column()
+	@Column({ default: 0 })
 	price: number
 
-	@Column()
+	@Column({ default: '' })
 	description: string
+
+	@Column({ type: 'uuid' })
+	userId: string
 
 	@CreateDateColumn()
 	createdAt: string
@@ -52,4 +51,8 @@ export class Item {
 	@ManyToMany(() => Category, category => category.items)
 	@JoinTable()
 	categories: Category[]
+
+	@ManyToOne(() => User, user => user.items)
+	@JoinColumn({ name: 'parentId' })
+	user: User
 }

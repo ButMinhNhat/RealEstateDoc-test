@@ -18,12 +18,10 @@ export class CategoryService {
 	getList = async (): Promise<Category[]> =>
 		this.categoryRepository.find({ order: { createdAt: 'DESC' } })
 
-	batchUpdate = async (entities: BatchUpdateCategory[]): Promise<Category[]> =>
+	batchUpdate = async (body: BatchUpdateCategory[]): Promise<Category[]> =>
 		this.dataSource.transaction(async manager => {
 			// Delete rows which id are not included in list
-			const updateListIds = entities
-				.filter(item => item.id)
-				.map(item => item.id)
+			const updateListIds = body.filter(item => item.id).map(item => item.id)
 			await manager.softDelete(Category, { id: Not(In(updateListIds)) })
 
 			// Upsert list
@@ -31,7 +29,7 @@ export class CategoryService {
 				id: In(updateListIds)
 			})
 			const categoryEntities = await Promise.all(
-				entities.map(async ({ id, ...item }) => {
+				body.map(async ({ id, ...item }) => {
 					// Update
 					if (id) {
 						const existedData = existedDataList.find(data => data.id === id)

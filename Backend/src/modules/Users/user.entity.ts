@@ -2,9 +2,12 @@ import {
 	PrimaryGeneratedColumn,
 	CreateDateColumn,
 	UpdateDateColumn,
+	OneToMany,
 	Column,
 	Entity
 } from 'typeorm'
+
+import { Item } from '../Items/item.entity'
 
 @Entity('users')
 export class User {
@@ -22,4 +25,8 @@ export class User {
 
 	@UpdateDateColumn()
 	updatedAt: string
+
+	Relations
+	@OneToMany(() => Item, item => item.user)
+	items: Item[]
 }
