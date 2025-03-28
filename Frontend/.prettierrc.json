@@ -1,0 +1,21 @@
+{
+	"useTabs": true,
+
+	"semi": false,
+	"singleQuote": true,
+	"jsxSingleQuote": false,
+
+	"sortingMethod": "lineLength",
+
+	"arrowParens": "avoid",
+	"trailingComma": "none",
+
+	"importTypeOrder": ["NPMPackages", "localImports"],
+	"stripNewlines": true,
+	"newlineBetweenTypes": true,
+
+	"plugins": [
+		"./node_modules/prettier-plugin-sort-imports/dist/index.js",
+		"prettier-plugin-sort-json"
+	]
+}
