@@ -4,11 +4,13 @@ import { ConfigModule } from '@nestjs/config'
 
 import { CategoryModule, ItemModule, UserModule } from './modules'
 import { CustomExceptionFilter, AuthGuard } from 'libs'
+import { DatabaseConnection } from 'libs'
 
 @Module({
 	imports: [
 		// Configs
 		ConfigModule.forRoot({ isGlobal: true }),
+		DatabaseConnection(),
 
 		// Modules
 		UserModule,

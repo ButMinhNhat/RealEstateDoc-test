@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: real_estate_doc_test
+    restart: always
+    environment:
+      POSTGRES_USER: real_estate_doc_user
+      POSTGRES_PASSWORD: real_estate_doc_password
+      POSTGRES_DB: real_estate_doc_database
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
