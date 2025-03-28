@@ -3,14 +3,15 @@ import {
 	BadRequestException,
 	Injectable
 } from '@nestjs/common'
+import { plainToInstance } from 'class-transformer'
 import { InjectRepository } from '@nestjs/typeorm'
 import { ConfigService } from '@nestjs/config'
 import { Repository } from 'typeorm'
 import * as jwt from 'jsonwebtoken'
 import * as bcrypt from 'bcrypt'
 
+import { AuthReqDto, AuthResDto } from 'libs'
 import { User } from './user.entity'
-import { AuthReqDto } from 'libs'
 
 @Injectable()
 export class UserService {
@@ -28,14 +29,19 @@ export class UserService {
 
 	// Main services
 
-	private generateJWT = (payload: any) => ({
-		accessToken: jwt.sign(payload, this.secretKey, { expiresIn: '15m' }),
-		refreshToken: jwt.sign(payload, this.secretKey, { expiresIn: '7d' })
+	private resultWithJWT = (data: User) => ({
+		...data,
+		accessToken: jwt.sign({ userId: data.id }, this.secretKey, {
+			expiresIn: '15m'
+		}),
+		refreshToken: jwt.sign({ userId: data.id }, this.secretKey, {
+			expiresIn: '7d'
+		})
 	})
 
 	// Main services
 
-	signIn = async ({ username, password }: AuthReqDto): Promise<User> => {
+	signIn = async ({ username, password }: AuthReqDto): Promise<AuthResDto> => {
 		if (!username || !password)
 			throw new BadRequestException('Invalid username or password!')
 
@@ -43,13 +49,15 @@ export class UserService {
 		const userDetail = await this.userRepository.findOne({
 			where: { username }
 		})
-		if (!userDetail || !bcrypt.compare(password, userDetail.password))
+
+		if (!userDetail || !(await bcrypt.compare(password, userDetail.password)))
 			throw new BadRequestException('Invalid username or password!')
 
-		return { ...userDetail, ...this.generateJWT({ userId: userDetail.id }) }
+		const result = this.resultWithJWT(userDetail)
+		return plainToInstance(AuthResDto, result)
 	}
 
-	signUp = async ({ username, password }: AuthReqDto): Promise<User> => {
+	signUp = async ({ username, password }: AuthReqDto): Promise<AuthResDto> => {
 		if (!username || !password)
 			throw new BadRequestException('Invalid username or password!')
 
@@ -59,9 +67,10 @@ export class UserService {
 			username,
 			password: hashPassword
 		})
-		const result = await this.userRepository.save(userEntity)
+		const resUser = await this.userRepository.save(userEntity)
 
-		return { ...result, ...this.generateJWT({ userId: result.id }) }
+		const result = this.resultWithJWT(resUser)
+		return plainToInstance(AuthResDto, result)
 	}
 
 	authentication = async (token: string): Promise<User> => {
