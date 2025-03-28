@@ -1,7 +1,7 @@
 import { Body, Controller, HttpCode, Post } from '@nestjs/common'
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
 
-import { AuthReqDto, AuthResDto, IsPublic } from 'libs'
+import { AuthReqDto, AuthResDto, formatDTO, IsPublic } from 'libs'
 import { UserService } from './user.service'
 
 @Controller('users')
@@ -14,7 +14,8 @@ export class UserController {
 	@HttpCode(201)
 	@ApiOperation({ summary: 'Sign in to system' })
 	async signIn(@Body() body: AuthReqDto): Promise<AuthResDto> {
-		return this.userService.signIn(body)
+		const result = await this.userService.signIn(body)
+		return formatDTO(AuthResDto, result)
 	}
 
 	@Post('sign-up')
@@ -22,6 +23,7 @@ export class UserController {
 	@HttpCode(201)
 	@ApiOperation({ summary: 'Sign up to system' })
 	async signUp(@Body() body: AuthReqDto): Promise<AuthResDto> {
-		return this.userService.signUp(body)
+		const result = await this.userService.signUp(body)
+		return formatDTO(AuthResDto, result)
 	}
 }

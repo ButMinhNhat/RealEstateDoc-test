@@ -21,15 +21,8 @@ export class CategoryDto {
 	code: string
 
 	@ApiProperty()
+	@Expose()
 	name: string
-
-	@ApiProperty()
-	@Expose()
-	createdAt: string
-
-	@ApiProperty()
-	@Expose()
-	updatedAt: string
 }
 
 // Request

@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post } from '@nestjs/common'
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
 
-import { ReqBatchUpdateCategory, CategoryDto, IsPublic } from 'libs'
+import { ReqBatchUpdateCategory, CategoryDto, IsPublic, formatDTO } from 'libs'
 import { CategoryService } from './category.service'
 
 @Controller('categories')
@@ -13,7 +13,8 @@ export class CategoryController {
 	@IsPublic()
 	@ApiOperation({ summary: 'Get list Categories' })
 	async getList(): Promise<CategoryDto[]> {
-		return this.categoryService.getList()
+		const result = await this.categoryService.getList()
+		return formatDTO(CategoryDto, result)
 	}
 
 	@Post()
@@ -21,6 +22,7 @@ export class CategoryController {
 	async batchUpdate(
 		@Body() body: ReqBatchUpdateCategory
 	): Promise<CategoryDto[]> {
-		return this.categoryService.batchUpdate(body.data)
+		const result = await this.categoryService.batchUpdate(body.data)
+		return formatDTO(CategoryDto, result)
 	}
 }

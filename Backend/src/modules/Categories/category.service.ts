@@ -2,8 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common'
 import { DataSource, In, Not, Repository } from 'typeorm'
 import { InjectRepository } from '@nestjs/typeorm'
 
-import { BatchUpdateCategory, CategoryDto } from 'libs'
 import { Category } from './category.entity'
+import { BatchUpdateCategory } from 'libs'
 
 @Injectable()
 export class CategoryService {
@@ -15,11 +15,10 @@ export class CategoryService {
 
 	// Main services
 
-	getList = async (): Promise<CategoryDto[]> => this.categoryRepository.find()
+	getList = async (): Promise<Category[]> =>
+		this.categoryRepository.find({ order: { createdAt: 'DESC' } })
 
-	batchUpdate = async (
-		entities: BatchUpdateCategory[]
-	): Promise<CategoryDto[]> =>
+	batchUpdate = async (entities: BatchUpdateCategory[]): Promise<Category[]> =>
 		this.dataSource.transaction(async manager => {
 			// Delete rows which id are not included in list
 			const updateListIds = entities
@@ -46,7 +45,10 @@ export class CategoryService {
 					return this.categoryRepository.create(item)
 				})
 			)
-
-			return manager.save(Category, categoryEntities)
+			const result = await manager.save(Category, categoryEntities)
+			return result.sort(
+				(a, b) =>
+					new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+			)
 		})
 }

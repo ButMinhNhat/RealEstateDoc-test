@@ -3,7 +3,6 @@ import {
 	BadRequestException,
 	Injectable
 } from '@nestjs/common'
-import { plainToInstance } from 'class-transformer'
 import { InjectRepository } from '@nestjs/typeorm'
 import { ConfigService } from '@nestjs/config'
 import { Repository } from 'typeorm'
@@ -29,14 +28,9 @@ export class UserService {
 
 	// Main services
 
-	private resultWithJWT = (data: User) => ({
-		...data,
-		accessToken: jwt.sign({ userId: data.id }, this.secretKey, {
-			expiresIn: '15m'
-		}),
-		refreshToken: jwt.sign({ userId: data.id }, this.secretKey, {
-			expiresIn: '7d'
-		})
+	private generateJWT = (payload: any) => ({
+		accessToken: jwt.sign(payload, this.secretKey, { expiresIn: '15m' }),
+		refreshToken: jwt.sign(payload, this.secretKey, { expiresIn: '7d' })
 	})
 
 	// Main services
@@ -53,8 +47,7 @@ export class UserService {
 		if (!userDetail || !(await bcrypt.compare(password, userDetail.password)))
 			throw new BadRequestException('Invalid username or password!')
 
-		const result = this.resultWithJWT(userDetail)
-		return plainToInstance(AuthResDto, result)
+		return { ...userDetail, ...this.generateJWT({ userId: userDetail.id }) }
 	}
 
 	signUp = async ({ username, password }: AuthReqDto): Promise<AuthResDto> => {
@@ -69,8 +62,7 @@ export class UserService {
 		})
 		const resUser = await this.userRepository.save(userEntity)
 
-		const result = this.resultWithJWT(resUser)
-		return plainToInstance(AuthResDto, result)
+		return { ...resUser, ...this.generateJWT({ userId: resUser.id }) }
 	}
 
 	authentication = async (token: string): Promise<User> => {
