@@ -9,13 +9,13 @@ export class MediaService {
 
 	constructor(private readonly configService: ConfigService) {
 		this.awsS3Client = new S3Client({
-			region: this.configService.get('AWS_S3_REGION'),
+			region: this.configService.get('S3_REGION'),
 			credentials: {
-				accessKeyId: this.configService.get('AWS_S3_ACCESS_KEY'),
-				secretAccessKey: this.configService.get('AWS_S3_SECRET_ACCESS_KEY')
+				accessKeyId: this.configService.get('S3_ACCESS_KEY'),
+				secretAccessKey: this.configService.get('S3_SECRET_ACCESS_KEY')
 			}
 		})
-		this.bucketName = this.configService.get('AWS_S3_BUCKET_NAME')
+		this.bucketName = this.configService.get('S3_BUCKET_NAME')
 	}
 
 	getFileUrl = (fileName: string) =>
