@@ -15,10 +15,6 @@ export class AuthResDto {
 	@ApiProperty()
 	@Expose()
 	accessToken: string
-
-	@ApiProperty()
-	@Expose()
-	refreshToken: string
 }
 
 // Request

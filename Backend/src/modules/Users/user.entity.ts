@@ -26,7 +26,7 @@ export class User {
 	@UpdateDateColumn()
 	updatedAt: string
 
-	Relations
+	// Relations
 	@OneToMany(() => Item, item => item.user)
 	items: Item[]
 }

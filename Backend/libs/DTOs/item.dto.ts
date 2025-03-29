@@ -7,7 +7,8 @@ import {
 	Matches,
 	Length,
 	IsEnum,
-	IsUUID
+	IsUUID,
+	IsUrl
 } from 'class-validator'
 import { Expose, Transform, Type } from 'class-transformer'
 import { ApiProperty } from '@nestjs/swagger'
@@ -30,11 +31,11 @@ export class ItemDto {
 
 	@ApiProperty()
 	@Expose()
-	code: string
+	name: string
 
 	@ApiProperty()
 	@Expose()
-	name: string
+	avatar: string
 
 	@ApiProperty()
 	@Expose()
@@ -76,15 +77,13 @@ export class ItemPaginationDto {
 export class UpsertItemDto {
 	@ApiProperty()
 	@IsNotEmpty()
-	@Length(3, 25)
-	@Matches(/^\S+$/, { message: `'code' cannot contain spaces!` })
-	@Transform(({ value }) => value.toUpperCase())
-	code: string
+	@Length(3, 100)
+	name: string
 
 	@ApiProperty()
 	@IsNotEmpty()
-	@Length(3, 100)
-	name: string
+	@IsUrl()
+	avatar: string
 
 	@ApiProperty({ default: ItemType.NEW })
 	@IsEnum(ItemType)

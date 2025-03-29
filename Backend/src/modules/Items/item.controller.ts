@@ -6,7 +6,8 @@ import {
 	Post,
 	Body,
 	Get,
-	Put
+	Put,
+	Req
 } from '@nestjs/common'
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
 
@@ -29,25 +30,28 @@ export class ItemController {
 	@ApiOperation({ summary: 'Get list Items' })
 	async getPage(
 		@Query('page') page: number = 1,
-		@Query('limit') limit: number = 10
+		@Query('limit') limit: number = 10,
+		@Query('sort') sort: string = 'DESC',
+		@Query('search') search?: string
 	): Promise<ItemPaginationDto> {
-		return this.itemService.getPage({ page, limit }, {})
+		return this.itemService.getPage({ page, limit, sort }, search)
 	}
 
 	@Post()
 	@ApiOperation({ summary: 'Create Item' })
-	async create(@Body() body: UpsertItemDto): Promise<ItemDto> {
-		const result = await this.itemService.create(body)
+	async create(@Req() req: any, @Body() body: UpsertItemDto): Promise<ItemDto> {
+		const result = await this.itemService.create(body, req.userId)
 		return formatDTO(ItemDto, result)
 	}
 
 	@Put('/:id')
 	@ApiOperation({ summary: 'Update Item' })
 	async update(
+		@Req() req: any,
 		@Param('id') id: string,
 		@Body() body: UpsertItemDto
 	): Promise<ItemDto> {
-		const result = await this.itemService.update({ id, ...body })
+		const result = await this.itemService.update({ id, ...body }, req.userId)
 		return formatDTO(ItemDto, result)
 	}
 

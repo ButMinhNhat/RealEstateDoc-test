@@ -16,9 +16,6 @@ export class Category {
 	id: string
 
 	@Column()
-	code: string
-
-	@Column()
 	name: string
 
 	@CreateDateColumn()

@@ -18,10 +18,6 @@ export class CategoryDto {
 
 	@ApiProperty()
 	@Expose()
-	code: string
-
-	@ApiProperty()
-	@Expose()
 	name: string
 }
 
@@ -31,13 +27,6 @@ export class BatchUpdateCategory {
 	@IsUUID()
 	@IsOptional()
 	id: string
-
-	@ApiProperty()
-	@IsNotEmpty()
-	@Length(3, 25)
-	@Matches(/^\S+$/, { message: `'code' cannot contain spaces!` })
-	@Transform(({ value }) => value.toUpperCase())
-	code: string
 
 	@ApiProperty()
 	@IsNotEmpty()

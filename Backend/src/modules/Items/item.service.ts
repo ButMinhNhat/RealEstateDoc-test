@@ -3,7 +3,7 @@ import {
 	BadRequestException,
 	Injectable
 } from '@nestjs/common'
-import { FindManyOptions, FindOneOptions, In, Repository } from 'typeorm'
+import { DataSource, FindOneOptions, In, Repository } from 'typeorm'
 import { InjectRepository } from '@nestjs/typeorm'
 
 import { Category } from '../Categories/category.entity'
@@ -17,7 +17,9 @@ export class ItemService {
 		private itemRepository: Repository<Item>,
 
 		@InjectRepository(Category)
-		private categoryRepository: Repository<Category>
+		private categoryRepository: Repository<Category>,
+
+		private dataSource: DataSource
 	) {}
 
 	getCategories = async (categoryIds: string[]): Promise<Category[]> => {
@@ -35,34 +37,54 @@ export class ItemService {
 	// Main services
 
 	getPage = async (
-		pageOptions: { page: number; limit: number },
-		cond: FindManyOptions<Item> = {}
+		pageOptions: { page: number; limit: number; sort: string },
+		search?: string
 	): Promise<ItemPaginationDto> => {
-		const { page, limit } = pageOptions
+		const { page, limit, sort } = pageOptions
 
-		const [data, total] = await this.itemRepository.findAndCount({
-			...cond,
-			order: { createdAt: 'DESC' },
-			relations: ['categories']
-		})
-		console.log(data.map(item => item.id))
+		// Create query builder
+		const query = this.dataSource
+			.getRepository(Item)
+			.createQueryBuilder('item')
+			.leftJoinAndSelect('item.categories', 'category')
+			.leftJoinAndSelect('item.user', 'user')
+			.orderBy('item.createdAt', sort as any)
+
+		// Search
+		if (search)
+			query.andWhere(
+				`(item.name ILIKE :search OR category.name ILIKE :search)`,
+				{ search: `%${search}%` }
+			)
+
+		// Pagination
+		query.skip((page - 1) * limit).take(limit)
+
+		const [data, total] = await query.getManyAndCount()
 		return { data, page, limit, total }
 	}
 
 	getDetail = async (options: FindOneOptions<Item>): Promise<Item> =>
 		this.itemRepository.findOne({ ...options })
 
-	create = async ({
-		categoryIds = [],
-		...body
-	}: UpsertItemDto): Promise<Item> => {
+	create = async (
+		{ categoryIds = [], ...body }: UpsertItemDto,
+		userId: string
+	): Promise<Item> => {
 		const categories = await this.getCategories(categoryIds)
-		const itemEntity = this.itemRepository.create({ ...body, categories })
+		const itemEntity = this.itemRepository.create({
+			...body,
+			categories,
+			userId
+		})
 
 		return this.itemRepository.save(itemEntity)
 	}
 
-	update = async (body: UpsertItemDto & { id: string }): Promise<Item> => {
+	update = async (
+		body: UpsertItemDto & { id: string },
+		userId: string
+	): Promise<Item> => {
 		const { id, categoryIds, ...reqBody } = body
 
 		const existedData = await this.getDetail({
@@ -72,7 +94,11 @@ export class ItemService {
 		const categories = categoryIds
 			? await this.getCategories(categoryIds)
 			: existedData.categories
-		const updatedEntity = Object.assign(existedData, { ...reqBody, categories })
+		const updatedEntity = Object.assign(existedData, {
+			...reqBody,
+			categories,
+			userId
+		})
 
 		return this.itemRepository.save(updatedEntity)
 	}

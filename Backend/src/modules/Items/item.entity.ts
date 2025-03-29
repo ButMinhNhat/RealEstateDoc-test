@@ -21,10 +21,10 @@ export class Item {
 	id: string
 
 	@Column()
-	code: string
+	name: string
 
 	@Column()
-	name: string
+	avatar: string
 
 	@Column({ enum: ItemType })
 	type: string
@@ -53,6 +53,6 @@ export class Item {
 	categories: Category[]
 
 	@ManyToOne(() => User, user => user.items)
-	@JoinColumn({ name: 'parentId' })
+	@JoinColumn({ name: 'userId' })
 	user: User
 }
