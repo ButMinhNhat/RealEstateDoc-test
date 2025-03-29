@@ -1,23 +1,16 @@
-import { ConfigService } from '@nestjs/config'
-import { Injectable } from '@nestjs/common'
-
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
+import { Injectable } from '@nestjs/common'
 
 @Injectable()
 export class MediaService {
-	private readonly awsS3Client: S3Client
-	private readonly bucketName: string
-
-	constructor(private readonly configService: ConfigService) {
-		this.awsS3Client = new S3Client({
-			region: this.configService.get('AWS_S3_REGION'),
-			credentials: {
-				accessKeyId: this.configService.get('AWS_S3_ACCESS_KEY'),
-				secretAccessKey: this.configService.get('AWS_S3_SECRET_ACCESS_KEY')
-			}
-		})
-		this.bucketName = this.configService.get('AWS_S3_BUCKET_NAME')
-	}
+	private readonly bucketName = 'realestatedoc-test'
+	private readonly awsS3Client = new S3Client({
+		region: 'ap-northeast-1',
+		credentials: {
+			accessKeyId: 'AKIAWL6TE4P4EX2OZZUD',
+			secretAccessKey: '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'
+		}
+	})
 
 	getFileUrl = (fileName: string) =>
 		`https://${this.bucketName}.s3.amazonaws.com/${fileName}`
