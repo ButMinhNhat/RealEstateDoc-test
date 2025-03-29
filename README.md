@@ -1,6 +1,6 @@
 ##### Tech stacks
-Backend: NestJS, Docker, PostgreSQL, TypeORM, Swagger, AWS S3
-Frontend: NextJS, TailwindCSS
+- Backend: NestJS, Docker, PostgreSQL, TypeORM, Swagger, AWS S3
+- Frontend: NextJS, TailwindCSS
 
 ##### Run source 
 # Backend
