@@ -2,7 +2,7 @@ import { ConfigModule } from '@nestjs/config'
 import { APP_GUARD } from '@nestjs/core'
 import { Module } from '@nestjs/common'
 
-import { CategoryModule, ItemModule, UserModule } from './modules'
+import { CategoryModule, ItemModule, MediaModule, UserModule } from './modules'
 import { DatabaseConnection } from 'libs'
 import { AuthGuard } from 'libs'
 
@@ -15,7 +15,8 @@ import { AuthGuard } from 'libs'
 		// Modules
 		UserModule,
 		ItemModule,
-		CategoryModule
+		CategoryModule,
+		MediaModule
 	],
 	providers: [{ provide: APP_GUARD, useClass: AuthGuard }]
 })

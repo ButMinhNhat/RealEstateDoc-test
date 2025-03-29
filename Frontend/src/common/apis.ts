@@ -94,3 +94,14 @@ export const batchUpdateCategories = async (body: any) => {
         throw error;
     }
 }
+
+export const uploadImage = async (formData: FormData) => {
+    try {
+        const response = await apiClient.post(`/media`, formData, { 
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        return response.data?.imageUrl;
+    } catch (error) {
+        throw error;
+    }
+}

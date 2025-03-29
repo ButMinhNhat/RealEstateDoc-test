@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import { CategoryDto, FormDataDto, OpenModal } from "@/common/entity";
-import { batchUpdateCategories, getCategories } from "@/common/apis";
+import { batchUpdateCategories, getCategories, uploadImage } from "@/common/apis";
 
 const typeOptions = ["NEW", "USED", "REFURBISHED", "LIMITED", "DIGITAL"];
 
@@ -16,10 +16,16 @@ export default function SideModal(props: SideModalProps) {
   const { formData, setFormData, setOpenModal, handleSubmit } = props;
   const { type, data } = formData
 
-  const handleImageUpload = (e: any) => {
+  const handleImageUpload = async (e: any) => {
     const file = e.target.files[0];
+
     if (file) {
-      //   setFormData((prev) => ({ ...prev, image: URL.createObjectURL(file) }));
+      const formData = new FormData()
+      formData.append('file', file)
+      
+      // handle upload
+      const resUrl = await uploadImage(formData)
+      setFormData(prev => ({ ...prev, data: { ...prev.data, avatar: resUrl }}))
     }
   };
 

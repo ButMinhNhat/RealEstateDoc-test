@@ -19,7 +19,7 @@ const defaultPagination = {
 const defaultFormData = {
   id: "",
   name: "",
-  avatar: "https://pbs.twimg.com/profile_images/1110148780991623201/vlqCsAVP_400x400.png",
+  avatar: "",
   type: "NEW",
   price: 0,
   description: "",
